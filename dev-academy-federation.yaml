@@ -1,0 +1,36 @@
+Description: "Dev-Academy Federation"
+Transform: "AWS::Serverless-2016-10-31"
+
+Parameters:
+  UserPoolName:
+    Type: String
+    Default: DevAcademyServerlessFederation
+  Version:
+    Type: String
+    Default: v1
+
+Resources:
+  UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+          AdminCreateUserConfig:
+            AllowAdminCreateUserOnly: false
+          UserPoolName: !Ref UserPoolName
+          UsernameAttributes:
+          - email
+          AutoVerifiedAttributes:
+          - email
+          Policies:
+            PasswordPolicy:
+                MinimumLength: 6
+                RequireLowercase: false
+                RequireNumbers: false
+                RequireSymbols: false
+                RequireUppercase: false
+  UserPoolTokenClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: !Ref UserPool
+        GenerateSecret: false
+        ExplicitAuthFlows:
+        - USER_PASSWORD_AUTH
