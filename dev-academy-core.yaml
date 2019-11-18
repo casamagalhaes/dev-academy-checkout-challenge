@@ -34,3 +34,11 @@ Resources:
         GenerateSecret: false
         ExplicitAuthFlows:
         - USER_PASSWORD_AUTH
+        
+Outputs:
+  CognitoID:
+    Description: UserPool id
+    Value: !Ref UserPool
+  CognitoClientID:
+    Description: Cognito client id
+    Value: !Ref UserPoolTokenClient

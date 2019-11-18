@@ -3,7 +3,7 @@ const docClient = new dynamodb.DocumentClient();
 
 const tableName = process.env.SAMPLE_TABLE;
 
-exports.createItemHandler = async (event) => {
+exports.createSaleHandler = async(event) => {
     if (event.httpMethod !== 'POST') {
         throw new Error(`postMethod only accepts POST method, you tried: ${event.httpMethod} method.`);
     }

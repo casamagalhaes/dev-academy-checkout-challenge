@@ -1,0 +1,9 @@
+dev-academy-sam-builds
+sam package --s3-bucket=dev-academy-sam-builds --template-file=./template.yml --output-template-file=./template-export.yml --region=us-east-1
+aws cloudformation deploy --template-file /Users/heitorrbarros/Documents/Heitor/repos/dev-academy-checkout-api/sales/template-export.yml --stack-name dev-academy-sales --region us-east-1 --capabilities CAPABILITY_IAM
+
+
+Google Client Id
+407506364214-a6nf1v5hc5ijjea5ne54162slt75otd0.apps.googleusercontent.com
+Client Secret 
+RIwm-uHyfziddIZVbr8ruGZn

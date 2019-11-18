@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  vendas
+
+Transform:
+- AWS::Serverless-2016-10-31
+
+Parameters:
+  UserPoolArn:
+    Type: String
+  Version:
+    Type: String
+    Default: v1
+
+Resources:
+  DevAcademyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: DevAcademyApi
+      StageName: !Ref Version
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !Ref UserPoolArn
+            
+  getAllSalesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: sales/handlers/get-all.getAllHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Get all sales from dynamodb table
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VendasTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref VendasTable
+      Events:
+        GetAllSalesResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: /sales
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+  getSaleByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/sales/handlers/get-by-id.getByIdHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Get sale by id from dynamodb table
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VendasTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref VendasTable
+      Events:
+        GetSaleResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: /sales/{id}
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+  createSaleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/sales/handlers/create.createSaleHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Create sale in dynamodb
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VendasTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref VendasTable
+      Events:
+        CreateSaleResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: /sales
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+  
+  VendasTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
