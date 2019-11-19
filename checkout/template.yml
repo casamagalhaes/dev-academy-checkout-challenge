@@ -97,6 +97,24 @@ Resources:
             Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
+
+  getAllProductsMockFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/products/handlers/get-all-mocking.getAllProductsMockHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: All products mock
+      Events:
+        GetAllProductsMockResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: /products-mock
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
   
   VendasTable:
     Type: AWS::Serverless::SimpleTable
