@@ -14,7 +14,7 @@ POST products/
 ```
 Products must follow this model:
 ```json
-{"name": "Some interesting product", "price": 1.99}
+{"name": "Some interesting product", "description": "Some description", "price": 1.99, "brand": "A awesome brand"}
 ```
 Develop the following structure of the project in `checkout/src/sales`.
 
