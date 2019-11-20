@@ -25,7 +25,10 @@ exports.createSaleHandler = async(event) => {
     const result = await docClient.put(params).promise();
 
     const response = {
-        statusCode: 200,
+        statusCode: 201,
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        },
         body: JSON.stringify(body)
     };
 

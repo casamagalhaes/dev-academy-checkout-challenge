@@ -17,7 +17,10 @@ exports.getAllHandler = async(event) => {
 
     const response = {
         statusCode: 200,
-        body: JSON.stringify(items)
+        body: JSON.stringify(items),
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
     };
 
     console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);

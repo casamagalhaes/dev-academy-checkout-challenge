@@ -26,6 +26,8 @@ Resources:
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !Ref UserPoolArn
+            Identity:
+              Header: Authorization
         AddDefaultAuthorizerToCorsPreflight: False
             
   getAllSalesFunction:
@@ -52,6 +54,16 @@ Resources:
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
+  getAllSalesLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - getAllSalesFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref getAllSalesFunction
+      Principal: apigateway.amazonaws.com
+
   getSaleByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -75,6 +87,16 @@ Resources:
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
+  getSaleByIdLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - getSaleByIdFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref getSaleByIdFunction
+      Principal: apigateway.amazonaws.com
+
   createSaleFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -98,6 +120,15 @@ Resources:
             Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
+  createSaleLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - createSaleFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref createSaleFunction
+      Principal: apigateway.amazonaws.com
 
   getAllProductsMockFunction:
     Type: AWS::Serverless::Function
@@ -116,6 +147,16 @@ Resources:
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
+  getAllProductsLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - getAllProductsMockFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref getAllProductsMockFunction
+      Principal: apigateway.amazonaws.com
+
   getAllProductsUnauthMockFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -131,6 +172,15 @@ Resources:
             RestApiId: !Ref DevAcademyApi
             Path: /unauth/products/mock
             Method: GET
+  getAllProductsUnauthLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - getAllProductsUnauthMockFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref getAllProductsUnauthMockFunction
+      Principal: apigateway.amazonaws.com
   
   VendasTable:
     Type: AWS::Serverless::SimpleTable
