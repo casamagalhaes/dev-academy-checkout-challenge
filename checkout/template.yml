@@ -26,6 +26,7 @@ Resources:
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !Ref UserPoolArn
+        AddDefaultAuthorizerToCorsPreflight: False
             
   getAllSalesFunction:
     Type: AWS::Serverless::Function
@@ -47,7 +48,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: /sales
+            Path: sales
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
@@ -70,7 +71,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: /sales/{id}
+            Path: sales/{id}
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
@@ -93,7 +94,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: /sales
+            Path: sales
             Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
@@ -111,10 +112,25 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: /products-mock
+            Path: products/mock
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
+  getAllProductsUnauthMockFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/products/handlers/get-all-mocking.getAllProductsMockHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: All products mock
+      Events:
+        GetAllProductsMockResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: /unauth/products/mock
+            Method: GET
   
   VendasTable:
     Type: AWS::Serverless::SimpleTable
