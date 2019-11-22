@@ -2,7 +2,7 @@ const dynamodb = require('aws-sdk/clients/dynamodb');
 const uuid = require('uuid/v4');
 const docClient = new dynamodb.DocumentClient();
 const tableName = process.env.SAMPLE_TABLE;
-exports.createSaleHandler = async(event) => {
+exports.createProductHandler = async(event) => {
     try {
         if (event.httpMethod !== 'POST') {
             throw new Error(`postMethod only accepts POST method, you tried: ${event.httpMethod} method.`);
