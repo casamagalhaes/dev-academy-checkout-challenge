@@ -8,10 +8,10 @@ Transform:
 Parameters:
   UserPoolArn:
     Type: String
+    Default: arn:aws:cognito-idp:us-east-2:584368270190:userpool/us-east-2_a2y8KZOyp
   Version:
     Type: String
     Default: v1
-
 Resources:
   DevAcademyApi:
     Type: AWS::Serverless::Api
@@ -28,8 +28,7 @@ Resources:
             UserPoolArn: !Ref UserPoolArn
             Identity:
               Header: Authorization
-        AddDefaultAuthorizerToCorsPreflight: False
-            
+        AddDefaultAuthorizerToCorsPreflight: False   
   getAllSalesFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -41,10 +40,10 @@ Resources:
       Description: Get all sales from dynamodb table
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref VendasTable
+            TableName: !Ref SalesTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref VendasTable
+          SAMPLE_TABLE: !Ref SalesTable
       Events:
         GetAllSalesResource:
           Type: Api
@@ -63,7 +62,6 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref getAllSalesFunction
       Principal: apigateway.amazonaws.com
-
   getSaleByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -74,10 +72,10 @@ Resources:
       Description: Get sale by id from dynamodb table
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref VendasTable
+            TableName: !Ref SalesTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref VendasTable
+          SAMPLE_TABLE: !Ref SalesTable
       Events:
         GetSaleResource:
           Type: Api
@@ -90,13 +88,12 @@ Resources:
   getSaleByIdLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
-    - DevAcademyApi
-    - getSaleByIdFunction
+      - DevAcademyApi
+      - getSaleByIdFunction
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref getSaleByIdFunction
       Principal: apigateway.amazonaws.com
-
   createSaleFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -107,10 +104,10 @@ Resources:
       Description: Create sale in dynamodb
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref VendasTable
+            TableName: !Ref SalesTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref VendasTable
+          SAMPLE_TABLE: !Ref SalesTable
       Events:
         CreateSaleResource:
           Type: Api
@@ -120,6 +117,7 @@ Resources:
             Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
+ 
   createSaleLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -129,21 +127,61 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref createSaleFunction
       Principal: apigateway.amazonaws.com
-
-  getAllProductsMockFunction:
+  
+  createProductFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/products/handlers/get-all-mocking.getAllProductsMockHandler
+      Handler: src/products/handlers/create.createProductHandler
       Runtime: nodejs10.x
       MemorySize: 128
       Timeout: 100
-      Description: All products mock
+      Description: Create product in dynamodb
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref ProductsTable
       Events:
-        GetAllProductsMockResource:
+        CreateProductResource:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: products/mock
+            Path: products
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+  createProductLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - createProductFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref createProductFunction
+      Principal: apigateway.amazonaws.com
+      
+  getAllProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: products/handlers/get-all.getAllHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Get all products from dynamodb table
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref ProductsTable
+      Events:
+        GetAllProductsResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: products
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
@@ -151,38 +189,56 @@ Resources:
     Type: AWS::Lambda::Permission
     DependsOn:
     - DevAcademyApi
-    - getAllProductsMockFunction
+    - getAllProductsFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getAllProductsMockFunction
+      FunctionName: !Ref getAllProductsFunction
       Principal: apigateway.amazonaws.com
 
-  getAllProductsUnauthMockFunction:
+  getProductByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/products/handlers/get-all-mocking.getAllProductsMockHandler
+      Handler: src/products/handlers/get-by-id.getByIdHandler
       Runtime: nodejs10.x
       MemorySize: 128
       Timeout: 100
-      Description: All products mock
+      Description: Get product by id from dynamodb table
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref ProductsTable
       Events:
-        GetAllProductsMockResource:
+        GetProductResource:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: /unauth/products/mock
+            Path: products/{id}
             Method: GET
-  getAllProductsUnauthLambdaPermission:
+            Auth:
+              Authorizer: CognitoAuthorizer
+  getProductByIdLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
-    - DevAcademyApi
-    - getAllProductsUnauthMockFunction
+      - DevAcademyApi
+      - getProductByIdFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getAllProductsUnauthMockFunction
+      FunctionName: !Ref getProductByIdFunction
       Principal: apigateway.amazonaws.com
-  
-  VendasTable:
+
+  SalesTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  ProductsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
