@@ -20,3 +20,7 @@ Develop the following structure of the project in `checkout/src/sales`.
 
 ## How to submit
 Just open a Pull Request with solutions in this repository.
+
+Nome: Caio Weliton Nascimento Queiroz
+Curso: Engenharia de Software
+Semestre: 6º
