@@ -1,4 +1,4 @@
-const tableName = process.env.SAMPLE_TABLE;
+const TableName = process.env.SAMPLE_TABLE;
 const dynamodb = require("aws-sdk/clients/dynamodb");
 const docClient = new dynamodb.DocumentClient();
 
@@ -11,7 +11,7 @@ exports.getAllHandler = async event => {
 
   console.info("received:", event);
   var params = {
-    TableName: tableName
+    TableName
   };
 
   const data = await docClient.scan(params).promise();
