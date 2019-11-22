@@ -1,12 +1,14 @@
+const TableName = process.env.SAMPLE_TABLE;
+
 const dynamodb = require("aws-sdk/clients/dynamodb");
 const uuid = require("uuid/v4");
 const docClient = new dynamodb.DocumentClient();
-const tableName = process.env.SAMPLE_TABLE;
-exports.createSaleHandler = async event => {
+
+exports.createHandler = async event => {
   try {
     if (event.httpMethod !== "POST") {
       throw new Error(
-        `postMethod only accepts POST method, you tried: ${event.httpMethod} method.`
+        `postMethod only accepts POST method, you tried: ${event.method} method.`
       );
     }
 
@@ -14,10 +16,11 @@ exports.createSaleHandler = async event => {
 
     const body = JSON.parse(event.body);
     body.id = uuid();
+
     const Item = Object.assign({}, body);
 
     var params = {
-      TableName: tableName,
+      TableName,
       Item
     };
 
@@ -25,7 +28,9 @@ exports.createSaleHandler = async event => {
     const Location = !!requestContext
       ? `https://${requestContext.domainName}${requestContext.path}/${body.id}`
       : body.id;
-    const result = await docClient.put(params).promise();
+
+    await docClient.put(params).promise();
+
     const response = {
       statusCode: 201,
       headers: {
@@ -37,6 +42,7 @@ exports.createSaleHandler = async event => {
     return response;
   } catch (error) {
     console.log("error %j", error);
+
     const response = {
       statusCode: 500,
       headers: {
@@ -44,6 +50,7 @@ exports.createSaleHandler = async event => {
       },
       body: JSON.stringify(error)
     };
+
     return response;
   }
 };
