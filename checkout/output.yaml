@@ -30,7 +30,7 @@ Resources:
   getAllSalesFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://dev-academy-ellyofreitas-challenge/fc1ab621118c6e9bd7465cd8f8d4890c
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/b5067ccb435b7ba00c865edcde8e99a9
       Handler: sales/handlers/get-all.getAllHandler
       Runtime: nodejs10.x
       MemorySize: 128
@@ -90,7 +90,7 @@ Resources:
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
-      CodeUri: s3://dev-academy-ellyofreitas-challenge/277a055c5fd7722e397d68b016965ec1
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/7e25ae6c64343d1620dcccc5be4bf7c7
   getSaleByIdLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -127,7 +127,7 @@ Resources:
             Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
-      CodeUri: s3://dev-academy-ellyofreitas-challenge/277a055c5fd7722e397d68b016965ec1
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/7e25ae6c64343d1620dcccc5be4bf7c7
   createSaleLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -141,7 +141,7 @@ Resources:
   getAllProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://dev-academy-ellyofreitas-challenge/fc1ab621118c6e9bd7465cd8f8d4890c
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/b5067ccb435b7ba00c865edcde8e99a9
       Handler: products/handlers/get-all.getAllHandler
       Runtime: nodejs10.x
       MemorySize: 128
@@ -201,7 +201,7 @@ Resources:
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
-      CodeUri: s3://dev-academy-ellyofreitas-challenge/277a055c5fd7722e397d68b016965ec1
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/7e25ae6c64343d1620dcccc5be4bf7c7
   getProductByIdLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -238,7 +238,7 @@ Resources:
             Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
-      CodeUri: s3://dev-academy-ellyofreitas-challenge/277a055c5fd7722e397d68b016965ec1
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/7e25ae6c64343d1620dcccc5be4bf7c7
   createProductLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
