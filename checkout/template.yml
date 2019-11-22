@@ -29,7 +29,40 @@ Resources:
             Identity:
               Header: Authorization
         AddDefaultAuthorizerToCorsPreflight: False
-            
+  
+  createSaleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/sale/handlers/create.createProductHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Create sale in dynamodb
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VendasTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref VendasTable
+      Events:
+        CreateSaleResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: sales
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+  createSaleLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - createSaleFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref createSaleFunction
+      Principal: apigateway.amazonaws.com
+
   getAllSalesFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -63,7 +96,7 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref getAllSalesFunction
       Principal: apigateway.amazonaws.com
-
+  
   getSaleByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -97,53 +130,86 @@ Resources:
       FunctionName: !Ref getSaleByIdFunction
       Principal: apigateway.amazonaws.com
 
-  createSaleFunction:
+  getProductByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/sales/handlers/create.createSaleHandler
+      Handler: src/product/handlers/get-by-id.getByIdHandler
       Runtime: nodejs10.x
       MemorySize: 128
       Timeout: 100
-      Description: Create sale in dynamodb
+      Description: Get product by id from dynamodb table
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref VendasTable
+            TableName: !Ref ProductTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref VendasTable
+          SAMPLE_TABLE: !Ref ProductTable
       Events:
-        CreateSaleResource:
+        GetSaleResource:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: sales
-            Method: POST
-            Auth:
+            Path: products/{id}
+            Method: GET
+             Auth:
               Authorizer: CognitoAuthorizer
-  createSaleLambdaPermission:
+  getProductByIdLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
     - DevAcademyApi
-    - createSaleFunction
+    - getProductByIdFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref createSaleFunction
+      FunctionName: !Ref getProductByIdFunction
       Principal: apigateway.amazonaws.com
 
-  getAllProductsMockFunction:
+  createProductFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/products/handlers/get-all-mocking.getAllProductsMockHandler
+      Handler: src/products/handlers/create.createProductHandler
       Runtime: nodejs10.x
       MemorySize: 128
       Timeout: 100
-      Description: All products mock
+      Description: Create product in dynamodb
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref ProductsTable
+      Events:
+        CreateProductResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: products
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+  createProductLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - createProductFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref createProductFunction
+      Principal: apigateway.amazonaws.com
+
+  getAllProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/products/handlers/get-all.getAllProductsHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Return all products
       Events:
         GetAllProductsMockResource:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: products/mock
+            Path: products
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
@@ -151,35 +217,10 @@ Resources:
     Type: AWS::Lambda::Permission
     DependsOn:
     - DevAcademyApi
-    - getAllProductsMockFunction
+    - getAllProductsFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getAllProductsMockFunction
-      Principal: apigateway.amazonaws.com
-
-  getAllProductsUnauthMockFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/products/handlers/get-all-mocking.getAllProductsMockHandler
-      Runtime: nodejs10.x
-      MemorySize: 128
-      Timeout: 100
-      Description: All products mock
-      Events:
-        GetAllProductsMockResource:
-          Type: Api
-          Properties:
-            RestApiId: !Ref DevAcademyApi
-            Path: /unauth/products/mock
-            Method: GET
-  getAllProductsUnauthLambdaPermission:
-    Type: AWS::Lambda::Permission
-    DependsOn:
-    - DevAcademyApi
-    - getAllProductsUnauthMockFunction
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref getAllProductsUnauthMockFunction
+      FunctionName: !Ref getAllProductsFunction
       Principal: apigateway.amazonaws.com
   
   VendasTable:
@@ -191,3 +232,16 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
+      
+  ProductsTable:
+    Type: AWS::Serveless:SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: Id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+      
+      
