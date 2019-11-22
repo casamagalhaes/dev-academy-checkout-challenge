@@ -8,6 +8,7 @@ Transform:
 Parameters:
   UserPoolArn:
     Type: String
+    Default: arn:aws:cognito-idp:us-east-1:946946825150:userpool/us-east-1_rrWEcs5tt
   Version:
     Type: String
     Default: v1
@@ -182,7 +183,117 @@ Resources:
       FunctionName: !Ref getAllProductsUnauthMockFunction
       Principal: apigateway.amazonaws.com
   
+  createProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/products/handlers/create.createProductHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Create product in dynamodb
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Environment:
+        Variables:
+          PRODUCT_TABLE: !Ref ProductsTable
+      Events:
+        CreateProductResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: products
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+  createProductLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - createProductFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref createProductFunction
+      Principal: apigateway.amazonaws.com
+
+  getProductByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/products/handlers/get-by-id.getByIdHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Get product by id from dynamodbs table
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Environment:
+        Variables:
+          PRODUCT_TABLE: !Ref ProductsTable
+      Events:
+        GetProductResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: products/{id}
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+  getProductByIdLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - getProductByIdFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref getProductByIdFunction
+      Principal: apigateway.amazonaws.com
+
+  getAllProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: products/handlers/get-all.getAllProductsHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Get all products from dynamodb table
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Environment:
+        Variables:
+          PRODUCT_TABLE: !Ref ProductsTable
+      Events:
+        GetAllProductsResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: products
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+  getAllProductsLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - getAllProductsFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref getAllProductsFunction
+      Principal: apigateway.amazonaws.com
+
   VendasTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  ProductsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
