@@ -42,7 +42,3 @@ exports.createSaleHandler = async(event) => {
         }
         return response;
     }
-}
-
-// sam package --s3-bucket=dev-academy-bessa-build --template-file=./template.yml --output-template-file=./template-export.yml --region=us-east-2
-// aws cloudformation deploy --template-file ./template-export.yml --stack-name dev-academy-sales --region us-east-2 --capabilities CAPABILITY_IAM
