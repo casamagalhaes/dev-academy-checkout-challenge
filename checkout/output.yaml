@@ -1,55 +1,55 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  Checkout serverless api
-
+Description: Checkout serverless api
 Transform:
-  - AWS::Serverless-2016-10-31
-
+- AWS::Serverless-2016-10-31
 Parameters:
   UserPoolArn:
     Type: String
   Version:
     Type: String
     Default: v1
-
 Resources:
   DevAcademyApi:
     Type: AWS::Serverless::Api
     Properties:
       Name: DevAcademyApi
-      StageName: !Ref Version
+      StageName:
+        Ref: Version
       Cors:
-        AllowMethods: "'*'"
-        AllowHeaders: "'*'"
-        AllowOrigin: "'*'"
+        AllowMethods: '''*'''
+        AllowHeaders: '''*'''
+        AllowOrigin: '''*'''
       Auth:
         Authorizers:
           CognitoAuthorizer:
-            UserPoolArn: !Ref UserPoolArn
+            UserPoolArn:
+              Ref: UserPoolArn
             Identity:
               Header: Authorization
-        AddDefaultAuthorizerToCorsPreflight: False
-
+        AddDefaultAuthorizerToCorsPreflight: false
   getAllSalesFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/fc1ab621118c6e9bd7465cd8f8d4890c
       Handler: sales/handlers/get-all.getAllHandler
       Runtime: nodejs10.x
       MemorySize: 128
       Timeout: 100
       Description: Get all sales from dynamodb table
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref VendasTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: VendasTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref VendasTable
+          SAMPLE_TABLE:
+            Ref: VendasTable
       Events:
         GetAllSalesResource:
           Type: Api
           Properties:
-            RestApiId: !Ref DevAcademyApi
+            RestApiId:
+              Ref: DevAcademyApi
             Path: sales
             Method: GET
             Auth:
@@ -57,13 +57,13 @@ Resources:
   getAllSalesLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
-      - DevAcademyApi
-      - getAllSalesFunction
+    - DevAcademyApi
+    - getAllSalesFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getAllSalesFunction
+      FunctionName:
+        Ref: getAllSalesFunction
       Principal: apigateway.amazonaws.com
-
   getSaleByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -73,30 +73,34 @@ Resources:
       Timeout: 100
       Description: Get sale by id from dynamodb table
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref VendasTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: VendasTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref VendasTable
+          SAMPLE_TABLE:
+            Ref: VendasTable
       Events:
         GetSaleResource:
           Type: Api
           Properties:
-            RestApiId: !Ref DevAcademyApi
+            RestApiId:
+              Ref: DevAcademyApi
             Path: sales/{id}
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/277a055c5fd7722e397d68b016965ec1
   getSaleByIdLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
-      - DevAcademyApi
-      - getSaleByIdFunction
+    - DevAcademyApi
+    - getSaleByIdFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getSaleByIdFunction
+      FunctionName:
+        Ref: getSaleByIdFunction
       Principal: apigateway.amazonaws.com
-
   createSaleFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -106,50 +110,57 @@ Resources:
       Timeout: 100
       Description: Create sale in dynamodb
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref VendasTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: VendasTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref VendasTable
+          SAMPLE_TABLE:
+            Ref: VendasTable
       Events:
         CreateSaleResource:
           Type: Api
           Properties:
-            RestApiId: !Ref DevAcademyApi
+            RestApiId:
+              Ref: DevAcademyApi
             Path: sales
             Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/277a055c5fd7722e397d68b016965ec1
   createSaleLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
-      - DevAcademyApi
-      - createSaleFunction
+    - DevAcademyApi
+    - createSaleFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref createSaleFunction
+      FunctionName:
+        Ref: createSaleFunction
       Principal: apigateway.amazonaws.com
-
   getAllProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/fc1ab621118c6e9bd7465cd8f8d4890c
       Handler: products/handlers/get-all.getAllHandler
       Runtime: nodejs10.x
       MemorySize: 128
       Timeout: 100
       Description: Get all products from dynamodb table
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref ProductsTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ProductsTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref ProductsTable
+          SAMPLE_TABLE:
+            Ref: ProductsTable
       Events:
         GetAllProductsResource:
           Type: Api
           Properties:
-            RestApiId: !Ref DevAcademyApi
+            RestApiId:
+              Ref: DevAcademyApi
             Path: products
             Method: GET
             Auth:
@@ -157,13 +168,13 @@ Resources:
   getAllProductsLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
-      - DevAcademyApi
-      - getAllProductsFunction
+    - DevAcademyApi
+    - getAllProductsFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getAllProductsFunction
+      FunctionName:
+        Ref: getAllProductsFunction
       Principal: apigateway.amazonaws.com
-
   getProductByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -173,30 +184,34 @@ Resources:
       Timeout: 100
       Description: Get products by id from dynamodb table
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref ProductsTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ProductsTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref ProductsTable
+          SAMPLE_TABLE:
+            Ref: ProductsTable
       Events:
         GetProductResource:
           Type: Api
           Properties:
-            RestApiId: !Ref DevAcademyApi
+            RestApiId:
+              Ref: DevAcademyApi
             Path: products/{id}
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/277a055c5fd7722e397d68b016965ec1
   getProductByIdLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
-      - DevAcademyApi
-      - getProductByIdFunction
+    - DevAcademyApi
+    - getProductByIdFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getProductByIdFunction
+      FunctionName:
+        Ref: getProductByIdFunction
       Principal: apigateway.amazonaws.com
-
   createProductFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -206,30 +221,34 @@ Resources:
       Timeout: 100
       Description: Create saproductsn dynamodb
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref ProductsTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ProductsTable
       Environment:
         Variables:
-          SAMPLE_TABLE: !Ref ProductsTable
+          SAMPLE_TABLE:
+            Ref: ProductsTable
       Events:
         CreateProductResource:
           Type: Api
           Properties:
-            RestApiId: !Ref DevAcademyApi
+            RestApiId:
+              Ref: DevAcademyApi
             Path: products
             Method: POST
             Auth:
               Authorizer: CognitoAuthorizer
+      CodeUri: s3://dev-academy-ellyofreitas-challenge/277a055c5fd7722e397d68b016965ec1
   createProductLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
-      - DevAcademyApi
-      - createProductFunction
+    - DevAcademyApi
+    - createProductFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref createProductFunction
+      FunctionName:
+        Ref: createProductFunction
       Principal: apigateway.amazonaws.com
-
   VendasTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
