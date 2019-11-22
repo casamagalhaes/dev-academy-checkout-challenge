@@ -1,25 +1,30 @@
-const tableName = process.env.SAMPLE_TABLE;
+const TableName = process.env.SAMPLE_TABLE;
+
 const dynamodb = require("aws-sdk/clients/dynamodb");
 const docClient = new dynamodb.DocumentClient();
 
-exports.getAllHandler = async event => {
+exports.getByIdHandler = async event => {
   if (event.httpMethod !== "GET") {
     throw new Error(
-      `getAllItems only accept GET method, you tried: ${event.httpMethod}`
+      `getMethod only accept GET method, you tried: ${event.httpMethod}`
     );
   }
 
   console.info("received:", event);
+
+  const id = event.pathParameters.id;
+
   var params = {
-    TableName: tableName
+    TableName,
+    Key: { id: id }
   };
 
-  const data = await docClient.scan(params).promise();
-  const items = data.Items;
+  const data = await docClient.get(params).promise();
+  const item = data.Item;
 
   const response = {
     statusCode: 200,
-    body: JSON.stringify(items),
+    body: JSON.stringify(item),
     headers: {
       "Access-Control-Allow-Origin": "*"
     }
@@ -28,5 +33,6 @@ exports.getAllHandler = async event => {
   console.info(
     `response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`
   );
+
   return response;
 };
