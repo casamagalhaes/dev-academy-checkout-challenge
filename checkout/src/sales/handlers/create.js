@@ -1,5 +1,6 @@
 const dynamodb = require("aws-sdk/clients/dynamodb");
 const docClient = new dynamodb.DocumentClient();
+const uuid = require("uuid/v4");
 
 const TableName = process.env.SAMPLE_TABLE;
 
@@ -13,7 +14,7 @@ exports.createSaleHandler = async event => {
   console.info("received:", event);
 
   const body = JSON.parse(event.body);
-  const id = body.id;
+  const id = uuid();
   const timestamp = new Date().toISOString();
   const totalPrice = body.totalPrice;
   const items = body.items;
