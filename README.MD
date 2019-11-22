@@ -1,22 +1,3 @@
-# Dev academy checkout backend challenge
+Aprendi bastante com o curso, apesar de não ter experiência com Vue.js, ser iniciante em Node.js e ter sido minha primeira vez utilizando AWS acho que tive um ótimo aproveitamento no que coube a minha capacidade no momento do curso.
 
-## Problem:
-During cloud computing training Bruna noticed that the product listing was mocked. Yeah! We left it like that on purpose ;)
-
-Your challenge is to help her on developing the products backend.
-
-## To do
-We have the following new endpoints in our API:
-``` 
-GET products/{id}
-GET products/
-POST products/
-```
-Products must follow this model:
-```json
-{"name": "Some interesting product", "description": "Some description", "price": 1.99, "brand": "A awesome brand"}
-```
-Develop the following structure of the project in `checkout/src/sales`.
-
-## How to submit
-Just open a Pull Request with solutions in this repository.
+O curso também proporcionou uma maior curiosidade sobre as tecnologias abordadas, com certeza me aprofundarei e as utilizarei no futuro
