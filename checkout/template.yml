@@ -129,21 +129,43 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref createSaleFunction
       Principal: apigateway.amazonaws.com
+  
+  VendasTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
 
-  getAllProductsMockFunction:
+
+
+
+
+
+  getAllProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/products/handlers/get-all-mocking.getAllProductsMockHandler
+      CodeUri: src/
+      Handler: products/handlers/get-all.getAllHandler
       Runtime: nodejs10.x
       MemorySize: 128
       Timeout: 100
-      Description: All products mock
+      Description: Get all products from dynamodb table
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProdutosTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref ProdutosTable
       Events:
-        GetAllProductsMockResource:
+        GetAllProductsResource:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: products/mock
+            Path: products
             Method: GET
             Auth:
               Authorizer: CognitoAuthorizer
@@ -151,38 +173,80 @@ Resources:
     Type: AWS::Lambda::Permission
     DependsOn:
     - DevAcademyApi
-    - getAllProductsMockFunction
+    - getAllProductsFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getAllProductsMockFunction
+      FunctionName: !Ref getAllProductsFunction
       Principal: apigateway.amazonaws.com
 
-  getAllProductsUnauthMockFunction:
+  getProductByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/products/handlers/get-all-mocking.getAllProductsMockHandler
+      Handler: src/products/handlers/get-by-id.getByIdHandler
       Runtime: nodejs10.x
       MemorySize: 128
       Timeout: 100
-      Description: All products mock
+      Description: Get product by id from dynamodb table
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VendasTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref VendasTable
       Events:
-        GetAllProductsMockResource:
+        GetProductResource:
           Type: Api
           Properties:
             RestApiId: !Ref DevAcademyApi
-            Path: /unauth/products/mock
+            Path: products/{id}
             Method: GET
-  getAllProductsUnauthLambdaPermission:
+            Auth:
+              Authorizer: CognitoAuthorizer
+  getProductByIdLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
     - DevAcademyApi
-    - getAllProductsUnauthMockFunction
+    - getProductByIdFunction
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref getAllProductsUnauthMockFunction
+      FunctionName: !Ref getProductByIdFunction
       Principal: apigateway.amazonaws.com
-  
-  VendasTable:
+
+  createProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/products/handlers/create.createProductHandler
+      Runtime: nodejs10.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Create product in dynamodb
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VendasTable
+      Environment:
+        Variables:
+          SAMPLE_TABLE: !Ref VendasTable
+      Events:
+        CreateProductResource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref DevAcademyApi
+            Path: products
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+  createProductLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - DevAcademyApi
+    - createProductFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref createProductFunction
+      Principal: apigateway.amazonaws.com
+
+
+  ProdutosTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
