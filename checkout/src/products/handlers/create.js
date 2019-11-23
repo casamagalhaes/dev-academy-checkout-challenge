@@ -1,8 +1,8 @@
 const dynamodb = require("aws-sdk/clients/dynamodb");
 const uuid = require("uuid/v4");
 const docClient = new dynamodb.DocumentClient();
-const tableName = process.env.SAMPLE_TABLE;
-exports.createSaleHandler = async event => {
+const tableName = process.env.PROD_TABLE;
+exports.createProductHandler = async event => {
   try {
     if (event.httpMethod !== "POST") {
       throw new Error(
@@ -13,25 +13,19 @@ exports.createSaleHandler = async event => {
     console.info("received:", event);
 
     const body = JSON.parse(event.body);
-
-    //Another way to do
-    //const idTemp = uuid()
-    //const {timeStamp, totalPrice, items, payment} = body
-
-    body.id = uuid();
+    body.productId = uuid();
     const Item = Object.assign({}, body);
 
     var params = {
       TableName: tableName,
       Item
-      //Item: {idTemp, timeStamp, totalPrice, items, payment}
     };
 
     const { requestContext } = event;
     const Location = !!requestContext
       ? `https://${requestContext.domainName}${requestContext.path}/${body.id}`
       : body.id;
-    await docClient.put(params).promise();
+    const result = await docClient.put(params).promise();
     const response = {
       statusCode: 201,
       headers: {
