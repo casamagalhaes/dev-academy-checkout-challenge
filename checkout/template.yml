@@ -8,7 +8,6 @@ Transform:
 Parameters:
   UserPoolArn:
     Type: String
-    Default: arn:aws:cognito-idp:us-east-1:946946825150:userpool/us-east-1_rrWEcs5tt
   Version:
     Type: String
     Default: v1
