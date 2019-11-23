@@ -4,7 +4,7 @@ const docClient = new dynamodb.DocumentClient();
 
 const tableName = process.env.SAMPLE_TABLE;
 
-exports.createSaleHandler = async (event) => {
+exports.createProductHandler = async (event) => {
     try {
         if (event.httpMethod !== 'POST') {
             throw new Error(`postMethod only accepts POST method, you tried: ${event.httpMethod} method.`);
@@ -14,16 +14,16 @@ exports.createSaleHandler = async (event) => {
 
         const body = JSON.parse(event.body);
         body.id = uuid();
-        const Item = Object.assign({}, body);
+        const Product = Object.assign({}, body);
 
         var params = {
             TableName: tableName,
-            Item
+            Product
         };
 
         const { requestContext } = event;
         const Location = !!requestContext ? `https://${requestContext.domainName}${requestContext.path}/${body.id}` : body.id;
-        const result = await docClient.put(params).promise();
+        await docClient.put(params).promise();
         const response = {
             statusCode: 201,
             headers: {
