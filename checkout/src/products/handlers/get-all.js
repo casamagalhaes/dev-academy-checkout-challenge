@@ -5,11 +5,10 @@ const docClient = new dynamodb.DocumentClient();
 exports.getAllHandler = async event => {
   if (event.httpMethod !== "GET") {
     throw new Error(
-      `getAllItems only accept GET method, you tried: ${event.httpMethod}`
+      `getAllProducts only accept GET method, you tried: ${event.httpMethod}`
     );
   }
 
-  console.info("received:", event);
   var params = {
     TableName: tableName
   };
