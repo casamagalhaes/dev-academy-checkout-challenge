@@ -19,11 +19,11 @@ MongoDB
 Para a resolução do desafio, primeiramente foi configurado a conta da AWS com os seguintes requizitos:
 -Criação de um bucket que irá hospedar os packages
 
--Criação de um grupo "administrator" no IAM para conseguir uma acess key e uma secret key para configurar o AWS no console
+-Criação de um grupo "administrator" no IAM para conseguir uma acess key e uma secret key para configurar o AWS no console. É preciso fazer um usuário tb para anexar o grupo a ele. Coloque permissões para gerenciar o cognito, s3 e cloud formation.
 
--Criação de uma stack "Federation" no CloudFormation para administrar as autentificações e criação de usuários
+-Criação de uma stack "Federation" no CloudFormation para administrar as autentificações e criação de usuários. 
 
--Criar um usuário no cognito e modificar seu password para confirmar a conta
+-Criar um usuário no cognito e modificar seu password para confirmar a conta.(se o seu usuário ficar com status para mudar a senha busque no google o comando para alterar senha)
 
 __Após criar essa parte de autentificação já é possível pegar a "poolId" e "clientID" para configurar o "AuthService" que é adquirido no cognito, além do user e senha que foi criado.
 
